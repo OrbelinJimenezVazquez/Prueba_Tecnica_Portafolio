@@ -1,0 +1,66 @@
+<!-- src/app/components/service-form/service-form.html -->
+<div class="service-form-container">
+  <form [formGroup]="serviceForm" (ngSubmit)="onSubmit()" class="fade-in">
+    <div class="form-header">
+      <h3>Nuevo Servicio</h3>
+      <span class="provider-badge">Proveedor: {{ providerId }}</span>
+    </div>
+
+    <div>
+      <label for="name">Nombre del Servicio *</label>
+      <input 
+        type="text" 
+        formControlName="name" 
+        placeholder="Ej: Mantenimiento Preventivo"
+        [class]="serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched ? 'error' : ''" />
+      @if (serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched) {
+        <small>El nombre del servicio es requerido</small>
+      }
+    </div>
+
+    <div class="textarea-group">
+      <label for="description">Descripción del Servicio *</label>
+      <textarea 
+        formControlName="description" 
+        placeholder="Describe el servicio en detalle..."
+        rows="3"
+        [class]="serviceForm.get('description')?.invalid && serviceForm.get('description')?.touched ? 'error' : ''"></textarea>
+      @if (serviceForm.get('description')?.invalid && serviceForm.get('description')?.touched) {
+        <small>La descripción es requerida</small>
+      }
+      <p class="text-xs text-muted mt-1">Caracteres: {{ serviceForm.get('description')?.value?.length || 0 }}/500</p>
+    </div>
+
+    <div class="checkbox-group">
+      <input 
+        type="checkbox" 
+        id="isActive" 
+        formControlName="isActive" />
+      <label for="isActive" class="flex gap-2 items-center">
+        <span class="status-badge {{ serviceForm.get('isActive')?.value ? 'active' : 'inactive' }}"></span>
+        <span>
+          {{ serviceForm.get('isActive')?.value ? 'Servicio Activo' : 'Servicio Inactivo' }}
+          <span class="text-xs text-muted block">Disponible para contratación</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="form-footer">
+      <div class="text-xs text-muted">
+        <span>Los campos marcados con * son obligatorios</span>
+      </div>
+      <div class="flex gap-2">
+        <button type="button" class="btn-outline" (click)="cancelForm()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-success" [disabled]="serviceForm.invalid || isSubmitting">
+          @if (isSubmitting) {
+            <span class="rotate"></span> Creando...
+          } @else {
+            <span>Crear Servicio</span>
+          }
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

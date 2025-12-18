@@ -1,0 +1,59 @@
+/* src/app/components/provider-form/provider-form.css */
+
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--slate-700);
+  font-size: 0.875rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Inputs con bordes redondeados */
+.form-group input[type="text"],
+.form-group input[type="email"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--slate-300);
+  border-radius: var(--radius-lg);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: var(--slate-900);
+  transition: all var(--transition);
+  background-color: white;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-group input[type="text"]::placeholder,
+.form-group input[type="email"]::placeholder {
+  color: var(--slate-400);
+}
+
+/* Estados de validación */
+input.ng-invalid.ng-touched {
+  border-color: var(--rose-400) !important;
+}
+
+input.ng-valid.ng-touched {
+  border-color: var(--emerald-400) !important;
+}
+
+
+.text-danger {
+  color: #dc2626;
+  font-weight: 400;
+}
+.border-danger {
+  border-color: #dc2626 !important;
+}

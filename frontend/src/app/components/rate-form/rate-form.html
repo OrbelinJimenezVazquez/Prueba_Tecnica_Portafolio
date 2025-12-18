@@ -1,0 +1,215 @@
+<!-- src/app/components/rate-form/rate-form.html -->
+@if (showForm) {
+  <div class="rate-form-wrapper animate-fade-in">
+    <div class="rate-form-header">
+      <h3>Crear Nueva Tarifa</h3>
+      <p class="text-sm text-slate-500">Servicio ID: {{ serviceId }}</p>
+    </div>
+
+    <form [formGroup]="rateForm" (ngSubmit)="onSubmit()" class="rate-form">
+      <!-- Precio y Moneda -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="price">
+            <span class="label-text">Precio *</span>
+            <span class="label-hint">(Mínimo: 0.01)</span>
+          </label>
+          <div class="input-with-icon">
+            <input 
+              type="number" 
+              id="price" 
+              formControlName="price" 
+              placeholder="0.00"
+              step="0.01"
+              min="0.01"
+              (input)="formatPricePreview()"
+              [class]="rateForm.get('price')?.invalid && rateForm.get('price')?.touched ? 'input-error' : 'input-normal'">
+          </div>
+          @if (rateForm.get('price')?.invalid && rateForm.get('price')?.touched) {
+            <div class="error-message">
+              @if (rateForm.get('price')?.errors?.['required']) {
+                <span>El precio es requerido</span>
+              }
+              @if (rateForm.get('price')?.errors?.['min']) {
+                <span>El precio debe ser mayor a 0</span>
+              }
+            </div>
+          }
+          
+          @if (rateForm.get('price')?.value && rateForm.get('currency')?.value) {
+            <div class="price-preview">
+              <span class="preview-label">Vista previa:</span>
+              <span class="preview-value">
+                {{ formatPricePreview() }}
+              </span>
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="currency">Moneda *</label>
+          <select 
+            id="currency" 
+            formControlName="currency"
+            (change)="formatPricePreview()"
+            class="select-input"
+            [class]="rateForm.get('currency')?.invalid && rateForm.get('currency')?.touched ? 'input-error' : 'input-normal'">
+            @for (currency of currencies; track currency.code) {
+              <option [value]="currency.code">
+                {{ currency.code }} ({{ currency.symbol }}) - {{ currency.name }}
+              </option>
+            }
+          </select>
+          @if (rateForm.get('currency')?.invalid && rateForm.get('currency')?.touched) {
+            <div class="error-message">
+              <span>Selecciona una moneda</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Fechas de vigencia -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">Fecha de inicio *</label>
+          <div class="input-with-icon">
+            <input 
+              type="date" 
+              id="startDate" 
+              formControlName="startDate"
+              [min]="getMinDate()"
+              [max]="getMaxDate()"
+              (change)="validateDates()"
+              [class]="rateForm.get('startDate')?.invalid && rateForm.get('startDate')?.touched ? 'input-error' : 'input-normal'">
+          </div>
+          @if (rateForm.get('startDate')?.invalid && rateForm.get('startDate')?.touched) {
+            <div class="error-message">
+              <span>Fecha de inicio requerida</span>
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">Fecha de fin *</label>
+          <div class="input-with-icon">
+            <input 
+              type="date" 
+              id="endDate" 
+              formControlName="endDate"
+              [min]="getMinDate()"
+              [max]="getMaxDate()"
+              (change)="validateDates()"
+              [class]="rateForm.get('endDate')?.invalid && rateForm.get('endDate')?.touched ? 'input-error' : 'input-normal'">
+          </div>
+          @if (rateForm.get('endDate')?.invalid && rateForm.get('endDate')?.touched) {
+            <div class="error-message">
+              @if (rateForm.get('endDate')?.errors?.['required']) {
+                <span>Fecha de fin requerida</span>
+              }
+              @if (rateForm.get('endDate')?.errors?.['invalidDate']) {
+                <span>La fecha de fin debe ser posterior a la de inicio</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label for="description">
+          <span class="label-text">Descripción</span>
+          <span class="label-hint">(Opcional, máximo 500 caracteres)</span>
+        </label>
+        <textarea 
+          id="description" 
+          formControlName="description" 
+          placeholder="Describe esta tarifa, condiciones especiales, términos y condiciones, etc."
+          rows="3"
+          class="textarea-input"
+          [class]="rateForm.get('description')?.invalid && rateForm.get('description')?.touched ? 'input-error' : 'input-normal'"></textarea>
+        <div class="char-counter">
+          <span class="char-count">{{ rateForm.get('description')?.value?.length || 0 }}/500</span>
+        </div>
+      </div>
+
+      <!-- Estado activo -->
+      <div class="form-group">
+        <div class="checkbox-container">
+          <input 
+            type="checkbox" 
+            id="isActive" 
+            formControlName="isActive"
+            class="checkbox-input">
+          <label for="isActive" class="checkbox-label">
+            <div class="checkbox-content">
+              <div class="checkbox-text">
+                <span class="checkbox-title">
+                  {{ rateForm.get('isActive')?.value ? 'Tarifa Activa' : 'Tarifa Inactiva' }}
+                </span>
+                <span class="checkbox-description">
+                  {{ rateForm.get('isActive')?.value ? 'Disponible para contratación inmediata' : 'No disponible temporalmente' }}
+                </span>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Resumen de la tarifa - SIN ERRORES -->
+      @if (rateForm.get('startDate')?.value && rateForm.get('endDate')?.value) {
+        <div class="summary-card">
+          <div class="summary-header">
+            <h4 class="summary-title">Resumen de la Tarifa</h4>
+          </div>
+          <div class="summary-content">
+            <div class="summary-item">
+              <span class="summary-label">Precio:</span>
+              <span class="summary-value highlight">{{ formatPricePreview() }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Período:</span>
+              <span class="summary-value">
+                Del {{ rateForm.get('startDate')?.value | date:'dd/MM/yyyy' }} al {{ rateForm.get('endDate')?.value | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Duración:</span>
+              <span class="summary-value">
+                {{ getDurationInDays() }}
+              </span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Estado:</span>
+              <span class="pulse summary-value {{ rateForm.get('isActive')?.value ? 'status-active' : 'status-inactive' }}">
+                {{ rateForm.get('isActive')?.value ? 'Activa' : 'Inactiva' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Botones de acción -->
+      <div class="form-actions">
+        <div class="form-actions-left">
+          <span class="form-hint">Los campos marcados con * son obligatorios</span>
+        </div>
+        <div class="form-actions-right">
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="rateForm.invalid || isSubmitting">
+            @if (isSubmitting) {
+              <span class="btn-spinner"></span>
+              Creando...
+            } @else {
+              Crear Tarifa
+            }
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+}

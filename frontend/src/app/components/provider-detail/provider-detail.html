@@ -1,0 +1,39 @@
+<!-- src/app/components/provider-detail/provider-detail.html -->
+@if (provider) {
+  <div class="provider-detail-card">
+    <div class="provider-detail-header">
+      <h3 class="provider-name">{{ provider.name }}</h3>
+      <span class="provider-id">ID: #PROV-{{ provider.id?.toString().padStart(3, '0') }}</span>
+    </div>
+
+    <div class="provider-detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Email</span>
+        <span class="detail-value">{{ provider.contactEmail }}</span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">Teléfono</span>
+        <span class="detail-value">{{ provider.phone }}</span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">Estado</span>
+        <span class="detail-value">
+          @if (provider.isActive) {
+            <span class="badge badge-success">Activo</span>
+          } @else {
+            <span class="badge badge-inactive">Inactivo</span>
+          }
+        </span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">Creado</span>
+        <span class="detail-value">{{ provider.createdAt | date:'dd MMM yyyy HH:mm' }}</span>
+      </div>
+    </div>
+  </div>
+} @else {
+  <p class="no-provider">No hay proveedor seleccionado</p>
+}

@@ -1,0 +1,309 @@
+<!-- src/app/components/provider-list/provider-list.html -->
+<div class="container animate-fade-in">
+  <!-- Header -->
+  <div class="mb-8">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumb mb-2">
+      <a href="#" class="breadcrumb-item hover:text-slate-700">Inicio</a>
+      <span class="breadcrumb-divider">/</span>
+      <span class="breadcrumb-active">Proveedores</span>
+    </nav>
+    
+    <!-- Título y descripción -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Proveedores</h1>
+        <p class="mt-1 text-slate-500">Gestiona el catálogo de proveedores y sus servicios asociados.</p>
+      </div>
+      
+      <!-- Botón Nuevo Proveedor -->
+      <button class="btn btn-primary btn-lg" (click)="showNewProviderForm()">
+        <span class="material-symbols-outlined">add</span>
+        Nuevo Proveedor
+      </button>
+    </div>
+    
+    <div class="divider"></div>
+  </div>
+
+  <!-- Formulario para nuevo proveedor -->
+  @if (showCreateForm && !selectedProviderId && !expandedProviderId) {
+    <div class="card mb-6 p-6 animate-fade-in">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-slate-900">Nuevo Proveedor</h3>
+        <button class="btn btn-ghost" (click)="showCreateForm = false">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <app-provider-form
+        [providerToEdit]="null"
+        (providerUpdated)="onProviderUpdated()"
+        (onCancel)="showCreateForm = false">
+      </app-provider-form>
+    </div>
+  }
+
+  <!-- Tabla de proveedores -->
+  <div class="card">
+    <!-- Header de tabla -->
+    <div class="card-header">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-semibold text-slate-900">Todos los Proveedores</h2>
+          <p class="text-sm text-slate-500 mt-1">{{ totalProvidersCount }} proveedores registrados</p>
+        </div>
+      </div>
+    </div>
+
+    @if (providers.length > 0) {
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead class="table-header">
+            <tr>
+              <th>Proveedor</th>
+              <th>Contacto</th>
+              <th>Estado</th>
+              <th class="text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (provider of providers; track provider.id; let i = $index) {
+              <tr class="table-row group">
+                <!-- Columna 1: Proveedor -->
+                <td class="table-cell">
+                  <div class="flex items-center gap-4">
+                    <!-- Avatar con iniciales -->
+                    @if (provider.isActive) {
+                      <div class="avatar avatar-sm mr-4 p-4" 
+                          [class.avatar-primary]="i % 10 === 0"
+                          [class.avatar-blue]="i % 10 === 1"
+                          [class.avatar-purple]="i % 10 === 2"
+                          [class.avatar-orange]="i % 10 === 3"
+                          [class.avatar-pink]="i % 10 === 4"
+                          [class.avatar-slate]="i % 10 === 5"
+                          [class.avatar-green]="i % 10 === 6"
+                          [class.avatar-red]="i % 10 === 7"
+                          [class.avatar-grey]="i % 10 === 8"
+                          [class.avatar-yellow]="i % 10 === 9"
+                          [class.avatar-amber]="i % 10 === 10"
+                          >
+                        {{ getInitials(provider.name) }}
+                      </div>
+                    } @else {
+                      <div class="avatar avatar-sm avatar-slate mr-4">
+                        {{ getInitials(provider.name) }}
+                      </div>
+                    }
+                    
+                    <div>
+                      <div class="font-semibold text-slate-900 group-hover:text-primary-600 transition-colors">
+                        {{ provider.name }}
+                      </div>
+                      <div class="text-xs text-slate-500 mt-0.5">ID: #PROV-{{ provider.id?.toString().padStart(3, '0') }}</div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Columna 2: Contacto -->
+                <td class="table-cell">
+                  <div class="flex flex-col">
+                    <div class="text-sm text-slate-700 flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-slate-1000 text-[16px] pr">mail</span>
+                      {{ provider.contactEmail }}
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Columna 3: Estado -->
+                <td class="table-cell">
+                  @if (provider.isActive) {
+                    <span class="badge badge-success flex pulse">
+                      Activo
+                    </span>
+                  } @else {
+                    <span class="badge badge-inactive">
+                      Inactivo
+                    </span>
+                  }
+                </td>
+
+                <!-- Columna 4: Acciones -->
+                <td class="table-cell text-right">
+                  <div class="flex items-center justify-end gap-1 opacity-70">
+                    <!-- Botón para ver detalles -->
+                    <button class="btn btn-ghost p-1.5 btn-view-details" 
+                            (click)="viewProviderDetails(provider.id)"
+                            title="Ver detalles">
+                      <span class="material-symbols-outlined ">visibility</span>
+                    </button>
+
+                    <!-- Botón para ver servicios -->
+                    <button class="btn btn-ghost p-1.5 btn-view-services" 
+                            (click)="viewProviderServices(provider.id)"
+                            title="Ver servicios">
+                      <span class="material-symbols-outlined">list_alt</span>
+                    </button>
+                    <!-- Botón para editar -->
+                    <button class="btn btn-ghost p-1.5 btn-editt" 
+                            (click)="editProvider(provider.id)"
+                            title="Editar">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    
+                    <!-- Botón para eliminar -->
+                    <button class="btn btn-ghost p-1.5 btn-deletee" 
+                            (click)="deleteProvider(provider.id)"
+                            title="Eliminar">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Panel de DETALLES del proveedor -->
+              @if (selectedProviderId === provider.id) {
+                <tr class="bg-primary-50/50 bg-grey">
+                  <td colspan="4" class="p-0">
+                    
+                    <div class="p-6 border-t border-primary-200">
+                      <div class="flex items-center justify-between mb-6">
+                      
+                        <h3 class="text-lg font-semibold flex "><div class="marcador"></div>
+                          {{ isEditing ? 'Editando Proveedor' : 'Detalles del Proveedor' }}
+                        </h3>
+                        <button class="btn btn-ghost" (click)="closeDetail()">
+                          <span class="material-symbols-outlined">close</span>
+                        </button>
+                      </div>
+                      <div class="linea"></div>
+                      @if (isEditing) {
+                        <div class="p-6 rounded-lg border border-primary-200">
+                          <app-provider-form
+                            [providerToEdit]="provider"
+                            (providerUpdated)="onProviderUpdated()"
+                            (onCancel)="closeDetail()">
+                          </app-provider-form>
+                        </div>
+                      } @else {
+                        <div class="grid grid-cols-1 md:grid-cols-2 ">
+                          <!-- Información básica -->
+                          <div class="space-y-4 flex gap-6">
+                            <div class="p-4 bg-grey rounded-lg border border-slate-200 ">
+                              <div class="space-y-3">
+                                <div class="text-sm">
+                                  <p class=" text-slate-500  ">Nombre</p>
+                                  <p class="font-medium text-slate-900 p-2">{{ provider.name }}</p>
+                                </div>
+                                <div class="text-sm" >
+                                  <p class="text-slate-500">Email</p>
+                                  <p class="font-medium text-slate-900 p-2">{{ provider.contactEmail }}</p>
+                                </div>
+                                <div class="text-sm">
+                                  <p class=" text-slate-500">Teléfono</p>
+                                  <p class="font-medium text-slate-900 p-2">{{ provider.phone }}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Estado y metadatos -->
+                          <div class="gap-4 flex">
+                            <div class="p-4 rounded-lg border border-slate-200">
+                              <div class="space-y-3 text-sm ">
+                                <div class="flex justify-between">
+                                  <p class=" text-slate-500 ">Estado</p>
+                                  <div class="flex items-center">
+                                    @if (provider.isActive) {
+                                      <span class="badge badge-success pulse">
+                                        Activo
+                                      </span>
+                                    } @else {
+                                      <span class="badge badge-inactive">
+                                        Inactivo
+                                      </span>
+                                    }
+                                  </div>
+                                </div>
+                                <div>
+                                  <p class=" text-slate-500">Registrado el</p>
+                                  <p class=" font-medium text-slate-900  p-2">
+                                    {{ provider.createdAt | date:'dd MMM yyyy' }}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p class="text-slate-500">Última actualización</p>
+                                  <p class="font-medium text-slate-900  p-2">
+                                    {{ provider.updatedAt ? (provider.updatedAt | date:'dd MMM yyyy') : 'Sin actualizaciones' }}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p class=" text-slate-500">Servicios asociados</p>
+                                  <p class="font-medium text-slate-900  p-2">
+                                    {{ provider.services?.length || 0 }} servicios
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+
+              <!-- Panel de SERVICIOS del proveedor -->
+              @if (expandedProviderId === provider.id) {
+                <tr class="bg-grey">
+                  <td colspan="4" class="p-0">
+                    <div class="p-6 border-t border-blue-200">
+                      <div class="flex items-center justify-between mb-4">
+                        <div>
+                          <h4 class="text-lg flex items-center"><div class="marcador"></div>Servicios de {{ provider.name }}</h4>
+                        </div>
+                        <button class="btn btn-ghost" (click)="closeServices()">
+                          <span class="material-symbols-outlined">close</span>
+                        </button>
+                      </div>
+                      <app-service-list [providerId]="provider.id"></app-service-list>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="p-6 border-t border-slate-200">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500">
+            Mostrando <span class="font-medium text-slate-900">1</span> a 
+            <span class="font-medium text-slate-900">{{ totalProvidersCount }}</span> de 
+            <span class="font-medium text-slate-900">{{ totalProvidersCount }}</span> resultados
+          </p>
+          <div class="pagination">
+            <span class="pagination-page">1</span>
+            <button class="pagination-btn">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Estado vacío -->
+      <div class="empty-state">
+        <div class="empty-state-icon">🏢</div>
+        <h3 class="empty-state-title">No hay proveedores registrados</h3>
+        <p class="empty-state-description">
+          Comienza agregando tu primer proveedor para gestionar sus servicios y tarifarios.
+        </p>
+        <button class="btn btn-primary mt-4" (click)="showNewProviderForm()">
+          <span class="material-symbols-outlined">add</span>
+          Agregar Primer Proveedor
+        </button>
+      </div>
+    }
+  </div>
+</div>

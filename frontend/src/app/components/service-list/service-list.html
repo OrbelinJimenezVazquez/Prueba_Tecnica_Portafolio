@@ -1,0 +1,152 @@
+<!-- src/app/components/service-list/service-list.html -->
+@if (providerId) {
+  <div class="service-list-container">
+    <div class="service-section">
+      <div class="section-header">
+        <div class="flex conten-column">
+          <p class="text-sm text-slate-500 mt-1">
+            {{ services.length }} servicios registrados
+          </p>
+        </div>
+        <button class="btn btn-primary" (click)="showCreateForm = !showCreateForm">
+          <span class="material-symbols-outlined">{{ showCreateForm ? 'remove' : 'add' }}</span>
+          {{ showCreateForm ? 'Cancelar' : 'Nuevo Servicio' }}
+        </button>
+      </div>
+
+      <!-- Formulario para crear nuevo servicio -->
+      @if (showCreateForm && !editingServiceId) {
+        <div class="mb-6 animate-fade-in">
+          
+          <div class="p-4 bg-primary-50 rounded-lg border border-primary-200">
+            <h4 class="text-sm font-semibold text-primary-800 mb-4">Crear Nuevo Servicio</h4>
+            <app-service-form 
+              [providerId]="providerId" 
+              (serviceSaved)="onServiceSaved()"
+              (onCancel)="showCreateForm = false">
+            </app-service-form>
+          </div>
+        </div>
+      }
+
+      @if (services.length > 0) {
+        <div class="space-y-3 flex gap-6 conten-column" >
+          <div class="linea mb-6"></div>
+          @for (service of services; track service.id) {
+            <div class="service-card">
+              <div class="service-card-header flex justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="status-indicator {{ service.isActive ? 'active' : 'inactive' }}"></div>
+                  <div>
+                    <h4 class="service-card-title">{{ service.name }}</h4>
+                    <p class="service-card-description">{{ service.description }}</p>
+                  </div>
+                </div>
+
+                <!-- Controles (solo si NO está en modo edición) -->
+                @if (editingServiceId !== service.id) {
+                  <div class="flex items-center gap-2">
+                    <span class="badge {{ service.isActive ? 'badge-success' : 'badge-inactive' }}">
+                      {{ service.isActive ? 'Activo' : 'Inactivo' }}
+                    </span>
+                    
+                    <!-- Botón Editar -->
+                    <button 
+                      class="btn btn-ghost p-1.5 btn-editt"
+                      (click)="editService(service.id)"
+                      title="Editar servicio">
+                      <span class="material-symbols-outlined text-sm">edit</span>
+                    </button>
+                    
+                    <!-- Botón Eliminar -->
+                    <button 
+                      class="btn btn-ghost p-1.5 btn-deletee"
+                      (click)="deleteService(service.id)"
+                      title="Eliminar servicio">
+                      <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                    
+                    <!-- Botón Ver/Ocultar tarifas -->
+                    <button class="btn btn-sm btn-secondary" (click)="toggleRates(service.id)">
+                      <span class="material-symbols-outlined text-sm">
+                        {{ expandedServiceId === service.id ? 'expand_less' : 'expand_more' }}
+                      </span>
+                      {{ expandedServiceId === service.id ? 'Ocultar tarifas' : 'Ver tarifas' }}
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <!-- Formulario de edición (solo si está en modo edición) -->
+              @if (editingServiceId === service.id) {
+                <div class="edit-form-container">
+                  <h5>Editar Servicio</h5>
+                  <form (ngSubmit)="onEditSubmit(service.id, service)">
+                    <div class="edit-form-group">
+                      <label class="edit-form-label">Nombre</label>
+                      <input 
+                        type="text" 
+                        class="edit-form-input"
+                        [value]="service.name"
+                        #nameInput>
+                    </div>
+                    
+                    <div class="edit-form-group">
+                      <label class="edit-form-label">Descripción</label>
+                      <textarea 
+                        class="edit-form-textarea"
+                        [value]="service.description"
+                        #descInput></textarea>
+                    </div>
+                    
+                    <div class="edit-form-checkbox">
+                      <input 
+                        type="checkbox" 
+                        id="isActive-{{service.id}}"
+                        [checked]="service.isActive"
+                        #isActiveInput>
+                      <label for="isActive-{{service.id}}">Servicio activo</label>
+                    </div>
+
+                    <div class="edit-form-actions">
+                      <button 
+                        type="button" 
+                        class="btn btn-secondary"
+                        (click)="cancelEdit()">
+                        Cancelar
+                      </button>
+                      <button 
+                        type="submit" 
+                        class="btn btn-primary"
+                        [disabled]="false"> <!-- Puedes añadir lógica si quieres -->
+                        Guardar Cambios
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              }
+
+              <!-- Tarifas (solo si no está en edición y está expandido) -->
+              @if (editingServiceId !== service.id && expandedServiceId === service.id) {
+                <div class="mt-4 pt-4 border-t border-slate-200 slide-down">
+                  <app-rate-list [serviceId]="service.id"></app-rate-list>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="no-services">
+          <div class="no-services-icon">📦</div>
+          <p class="text-slate-500 mb-4">No hay servicios registrados para este proveedor</p>
+          @if (!showCreateForm) {
+            <button class="btn btn-primary" (click)="showCreateForm = true">
+              <span class="material-symbols-outlined">add</span>
+              Crear Primer Servicio
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

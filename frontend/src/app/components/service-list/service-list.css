@@ -1,0 +1,237 @@
+/* src/app/components/service-list/service-list.css */
+.service-section {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-table {
+  margin-top: 16px;
+}
+
+.service-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.service-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.service-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.service-status.active {
+  background-color: #d1fae5;
+  color: var(--success-color);
+}
+
+.service-status.inactive {
+  background-color: #fee2e2;
+  color: var(--danger-color);
+}
+
+.service-card{
+  background-color: white;
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s;
+}
+.service-card:hover {
+  box-shadow: var(--shadow-md);
+  background-color: #F8FAFC;
+}
+
+
+.expanded-service-row {
+  background-color: #f8fafc !important;
+}
+
+.rate-container {
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Estilos específicos para el formulario de edición inline */
+.service-card .edit-form-container {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.edit-form-container h5 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Campos del formulario */
+.edit-form-group {
+  margin-bottom: 1.25rem;
+}
+
+.edit-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.edit-form-label::after {
+  content: "*";
+  color: #ef4444;
+  font-size: 1.1rem;
+}
+
+.edit-form-input,
+.edit-form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: #0f172a;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.edit-form-input:focus,
+.edit-form-textarea:focus {
+  outline: none;
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.edit-form-textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+/* Checkbox */
+.edit-form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.edit-form-checkbox input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: #059669;
+}
+
+.edit-form-checkbox label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Botones de acción */
+.edit-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.edit-form-btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-form-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.edit-form-btn-primary {
+  background-color: #1d4ed8;
+  color: white;
+  border: 2px solid transparent;
+}
+
+.edit-form-btn-primary:hover:not(:disabled) {
+  background-color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form-btn-secondary {
+  background-color: white;
+  color: #334155;
+  border: 2px solid #cbd5e1;
+}
+
+.edit-form-btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

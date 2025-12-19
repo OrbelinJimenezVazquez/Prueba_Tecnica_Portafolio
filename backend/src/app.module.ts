@@ -1,4 +1,4 @@
-// src/app.module.ts
+// backend/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Provider } from './providers/entities/provider.entity';

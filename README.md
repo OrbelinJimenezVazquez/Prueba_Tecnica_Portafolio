@@ -121,7 +121,7 @@ Antes de instalar, asegúrate de tener lo siguiente:
     * No se permite eliminar un proveedor con servicios asociados.
     * No se permite eliminar un servicio con tarifarios asociados.
     * Los tarifarios deben tener `startDate <= endDate`.
-    * Evita duplicados en tarifarios (mismo rango de fechas para un servicio).
+    * Evita duplicados en tarifarios (mismo rango de fechas para un servicio)..
 * ### Frontend:
     * Validación en tiempo real de formularios.
     * Mensajes de error amigables.
